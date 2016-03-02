@@ -1,0 +1,165 @@
+.selectBlock {
+    display: inline-block;
+    height: 40px;
+    max-width: 130px;
+    box-sizing: border-box;
+    margin: 2px;
+    padding: 3px 6px 0 7px;
+    line-height: 34px;
+    border-radius: 2px;
+}
+
+.selectBlock select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    display: inline-block;
+    top: 0;
+    bottom: 0;
+    padding-top: 1px;
+    max-width: 65%;
+    border: none;
+    background: #fff;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+    direction: rtl;
+}
+
+.dateBtn {
+    display: inline-block;
+    box-sizing: border-box;
+    min-height: 40px;
+    height: 40px;
+    width: 130px;
+    margin: 2px;
+}
+
+.ratesForm {
+    text-align: center;
+    margin: 1px;
+    font-size: 0;
+}
+
+.inlineBlock {
+    display: inline;
+}
+
+.search {
+    display: inline-block;
+    height: 40px;
+    box-sizing: border-box;
+    padding-left: 12px;
+    padding-right: 10px;
+    margin: 2px;
+    border-radius: 2px;
+}
+
+.searchInput {
+    height: 29px !important;
+    padding-right: 0 !important;
+}
+
+table {
+    margin: 0 auto;
+    color: #333;
+    font-family: Helvetica, Arial, sans-serif;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+td,
+th {
+    padding: 4px;
+    border: 1px solid #CCC;
+    height: 30px;
+    min-width: 80px;
+}
+
+th {
+    cursor: pointer;
+    background: #F3F3F3;
+    font-weight: bold;
+}
+
+td {
+    vertical-align: middle;
+    text-align: center;
+}
+
+tr:nth-child(even) td {
+    background: #F1F1F1;
+}
+
+tr:nth-child(odd) td {
+    background: #FEFEFE;
+}
+
+.loading {
+    background-color: rgba(30, 0, 0, 0.74902);
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.ajax-loader {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -32px;
+    /* -1 * image width / 2 */
+    margin-top: -32px;
+    /* -1 * image height / 2 */
+}
+
+.popup {
+    background-color: rgba(255, 255, 255, 1) !important;
+}
+
+.red {
+    color: #CD0000;
+}
+
+.green {
+    color: #005D00;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.x.axis path {
+    display: none;
+}
+
+.line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+}
+
+@media (max-width: 470px) {
+    .ratesForm {
+        font-size: 0;
+    }
+    .selectBlock,
+    .dateBtn {
+        width: 50%;
+        max-width: 800px;
+        margin:0;
+    }
+    .search,
+    .currency {
+        margin: 0;
+        width: 100%
+    }
+    .currency {
+        margin-top: 10px;
+    }
+}

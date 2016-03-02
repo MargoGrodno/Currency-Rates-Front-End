@@ -1,0 +1,56 @@
+<ion-view title="Rates" on-swipe-left="swipeLeft()">
+    <ion-content overflow-scroll="true" padding="false" class="has-header">
+        <div class="ratesForm">
+            <date-selector class="inlineBlock" date-selector="ratesDate_changed" title-label='Select Date :)' input-date='date'>
+            </date-selector>
+            <div class="item item-input selectBlock">
+                <lable class="">
+                    Change:
+                </lable>
+                <select ng-model="periodProp" ng-change="setPeriod(periodProp)">
+                    <option value="1">day</option>
+                    <option value="3">days 3</option>
+                    <option value="7">week</option>
+                    <option value="30">days 30</option>
+                    <option value="90">days 90</option>
+                </select>
+            </div>
+            <label class="item item-input search">
+                <input type="text" placeholder="Search..." ng-model="searchCur" class="searchInput">
+            </label>
+        </div>
+        
+        <table id="records_table" ng-show="rates.length > 0">
+            <thead>
+                <tr>
+                    <th ng-click="sortType = 'name'; sortReverse = !sortReverse">
+                        Currence
+                        <span ng-show="sortType == 'name' && !sortReverse"><i class="ion-arrow-down-b"></i></span>
+                        <span ng-show="sortType == 'name' && sortReverse"><i class="ion-arrow-up-b"></i></span>
+                    </th>
+                    <th ng-click="sortType = 'rate'; sortReverse = !sortReverse">
+                        Rate
+                        <span ng-show="sortType == 'rate' && !sortReverse"><i class="ion-arrow-down-b"></i></span>
+                        <span ng-show="sortType == 'rate' && sortReverse"><i class="ion-arrow-up-b"></i></span>
+                    </th>
+                    <th ng-click="sortType = 'change'; sortReverse = !sortReverse">
+                        Сhange
+                        <span ng-show="sortType == 'change' && !sortReverse"><i class="ion-arrow-down-b"></i></span>
+                        <span ng-show="sortType == 'change' && sortReverse"><i class="ion-arrow-up-b"></i></span>
+                    </th>
+                </tr>
+            </thead>
+            <tr ng-repeat="item in rates | orderBy:sortType:sortReverse | filter:searchCur">
+                <td>{{item.name}}</td>
+                <td>{{item.rate}}</td>
+                <td ng-class="{'red': item.change < 0, 'green': item.change > 0}">
+                    <span ng-show="item.change > 0">+</span>
+                    <span ng-show="item.change < 0">-</span>
+                    
+                    {{Math.abs(item.change)}}
+                </td>
+            </tr>
+        </table>
+    
+    </ion-content>
+</ion-view>
