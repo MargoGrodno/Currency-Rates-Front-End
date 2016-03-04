@@ -2,13 +2,7 @@ angular.module('app.ratesController', [])
 
 .controller('ratesCtrl', ['$ionicPopup', '$scope', '$http', "$location", "serverUrl",
     function($ionicPopup, $scope, $http, $location, serverUrl) {
-        var formDate = function(date) {
-            var dd = date.getDate();
-            var mon = $scope.monthList[date.getMonth()];
-            var yyyy = date.getFullYear();
-            return dd + '-' + mon + '-' + yyyy;
-        }
-
+     
         var makeUTCDate = function(incomeDate) {
             var date = new Date(incomeDate);
             date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
@@ -23,17 +17,12 @@ angular.module('app.ratesController', [])
 
         $scope.Math = window.Math;
         $scope.monthList = ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
+        $scope.periodProp = '1';
         $scope.sortType = 'name';
         $scope.sortReverse = false;
         $scope.searchCur = '';
-        $scope.periodProp = '1';
-        $scope.formDate = formDate(new Date());
         $scope.rates = [];
         $scope.date = dateInBelarus();
-
-        $scope.$watch('date', function(newValue, oldValue) {
-            $scope.formDate = formDate(newValue);
-        });
 
         $scope.$on('ratesDate_changed', function(event, data) {
             $scope.date = data;

@@ -2,7 +2,7 @@
 
 angular.module('app', ['ionic', 'app.controllers', 'app.routes', 
   'app.services', 'app.directives', 'ionic-datepicker', 'app.ratesController', 
-  'app.chartController', 'app.chartDirective'])
+  'app.chartDirective'])
 
 .constant('serverUrl','https://quiet-everglades-44500.herokuapp.com/')
 //.constant('serverUrl','http://localhost:31333/')
