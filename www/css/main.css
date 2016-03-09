@@ -146,12 +146,39 @@ div.tooltip {
 }
 
 svg {
-    margin: 0 auto
+    margin: 0 auto;
 }
+
+
 .line {
     fill: none;
     stroke: steelblue;
     stroke-width: 1.5px;
+}
+
+.focus circle {
+  fill: none;
+  stroke: steelblue;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+  cursor: pointer;
+}
+
+.rate,
+.date{
+    fill:white;
+    font-family: "Helvetica Neue", "Roboto", "Segoe UI", sans-serif; 
+}
+
+.rate {
+    font-size: 15px;
+}
+
+.date {
+    font-size: 11px;
 }
 
 @media (max-width: 470px) {

@@ -1,11 +1,11 @@
 <div class="ratesForm">
-    <date-selector class="inlineBlock" date-selector="fromDate_changed" title-label="Select Date From" input-date='filter.dateFrom'></date-selector>
+    <date-selector class="inlineBlock" change-event="fromDate_changed" date-to='filter.dateTo' title-label="Select Date From" input-date='filter.dateFrom'></date-selector>
     
-    <date-selector class="inlineBlock" date-selector="toDate_changed" title-label="Select Date To" input-date='filter.dateTo'></date-selector>
+    <date-selector class="inlineBlock" change-event="toDate_changed" date-from='filter.dateFrom' title-label="Select Date To" input-date='filter.dateTo'></date-selector>
 
-    <div class="item item-input selectBlock currency">
+    <div class="item item-input selectBlock currency" ng-click="showDropdown('curSelector');">
         <lable class=""> Currency:</lable>
-        <select ng-model="filter.selectCur" ng-options="cur for cur in listCurrencies"></select>
+        <select id="curSelector" ng-model="filter.selectCur" ng-options="cur for cur in listCurrencies"></select>
     </div>
 </div>
 

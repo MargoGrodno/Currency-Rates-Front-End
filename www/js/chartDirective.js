@@ -1,7 +1,7 @@
 angular.module('app.chartDirective', [])
 
-.directive('coursesChart', ['$ionicPopup', '$http', 'serverUrl', 'monthList',
-    function($ionicPopup, $http, serverUrl, monthList) {
+.directive('coursesChart', ['$ionicPopup', '$http', 'serverUrl', 'monthList', '$timeout',
+    function($ionicPopup, $http, serverUrl, monthList, $timeout) {
 
         function makeChart(data, currencyAbb) {
             d3.select("svg").remove();
@@ -14,7 +14,7 @@ angular.module('app.chartDirective', [])
             var formatTime = d3.time.format("%e %B");
 
             var svgWidth = window.innerWidth - 10;
-            var menueHeight = window.innerWidth > 450 ? 150 : 210;
+            var menueHeight = window.innerWidth > 470 ? 140 : 190;
             var svgHeight = window.innerHeight - menueHeight;
             var chartWidth = svgWidth - chartMargin.left - chartMargin.right;
             var chartHeight = svgHeight - chartMargin.top - chartMargin.bottom;
@@ -25,17 +25,32 @@ angular.module('app.chartDirective', [])
                 .append("g")
                 .attr("transform", "translate(" + chartMargin.left + "," + chartMargin.top + ")");
 
+
+            var div = d3.select("#chart").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+
             var xScale = d3.time.scale()
                 .range([0, chartWidth])
                 .domain(d3.extent(data, function(d) {
                     return d.date;
                 }));
 
+            var yMinRate = d3.min(data, function(d) {
+                return d.rate;
+            });
+
+            var yMaxRate = d3.max(data, function(d) {
+                return d.rate;
+            });
+
+            var difference = yMaxRate - yMinRate;
+
+            var rateMargin = 1 + difference * 0.2;
+
             var yScale = d3.scale.linear()
                 .range([chartHeight, 0])
-                .domain(d3.extent(data, function(d) {
-                    return d.rate;
-                }));
+                .domain([yMinRate-rateMargin , yMaxRate+rateMargin]);
 
             var xAxis = d3.svg.axis()
                 .scale(xScale)
@@ -55,7 +70,7 @@ angular.module('app.chartDirective', [])
                 .y(function(d) {
                     return yScale(d.rate);
                 })
-                .interpolate("cardinal");
+                .interpolate("monotone");
 
 
             svgChart.append("path")
@@ -82,91 +97,66 @@ angular.module('app.chartDirective', [])
                     return "translate(" + (4 + this.getBBox().height / 2) + "," + (9 + this.getBBox().width / 2) + ")rotate(90)";
                 });
 
-            var div = d3.select("#chart").append("div")
-                .attr("class", "tooltip")
-                .style("opacity", 0);
+            var bisectDate = d3.bisector(function(d) {
+                return d.date;
+            }).left;
 
-            svgChart.selectAll(".dot")
-                .data(makeControlPoints(90, data))
-                .enter().append("circle")
-                .attr("class", "dot")
-                .attr("cx", line.x())
-                .attr("cy", line.y())
-                .attr("r", 2.5)
-                .on("mouseover", function(d) {
-                    div.transition()
-                        .duration(200)
-                        .style("opacity", .9);
-                    div.html(formatTime(d.date) + "<br/>" + d.rate)
-                        .style("left", (d3.event.pageX - 40) + "px")
-                        .style("top", (d3.event.pageY - 28) + "px");
-                })
-                .on("mouseout", function(d) {
-                    div.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-                });
-
-        };
-
-        function diffDays(lastDay, firstDay) {
-            var milisecDiff = firstDay.getTime() - lastDay.getTime();
-            return Math.ceil(milisecDiff / (1000 * 3600 * 24));
-        }
-
-        function getMinMaxPoints(data) {
-            var min = data[0],
-                max = data[0];
-            for (var i = 0; i < data.length; i++) {
-                if (data[i].rate < min.rate) {
-                    min = data[i];
-                }
-                if (data[i].rate > max.rate) {
-                    max = data[i];
-                }
+            var formatCurrency = function(d) {
+                return d3.format(",")(d);
             };
-            return { min: min, max: max };
-        }
 
-        function makeControlPoints(numPionts, data) {
-            if (data.length == 0) {
-                return [];
+            svgChart.append("rect")
+                .attr("class", "overlay")
+                .attr("width", chartWidth)
+                .attr("height", chartHeight)
+                .on("mouseover", function() {
+                    focus.style("display", null);
+                })
+                .on("mouseout", function() { focus.style("display", "none"); })
+                .on("mousemove", mousemove);
+
+            var focus = svgChart.append("g")
+                .attr("class", "focus")
+                .style("display", "none");
+
+            focus.append("rect")
+                .attr("x", -83)
+                .attr("y", -2)
+                .attr("width", 75)
+                .attr("height", 35)
+                .attr("fill", "#1f77b4")
+                .attr("fill-opacity", ".8");
+
+            focus.append("circle")
+                .attr("r", 3.5);
+
+            focus.append("text")
+                .attr("x", -79)
+                .attr("class", "date")
+                .attr("dy", "2.5em");
+
+            focus.append("text")
+                .attr("x", -79)
+                .attr("class", "rate")
+                .attr("dy", "1em")
+
+            function mousemove() {
+                var x0 = 0;
+                var x0 = xScale.invert(d3.mouse(this)[0]),
+                    i = bisectDate(data, x0, 1),
+                    d0 = data[i - 1],
+                    d1 = data[i],
+                    d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+                focus.attr("transform", "translate(" + xScale(d.date) + "," + yScale(d.rate) + ")");
+                focus.select(".date").text(formatTime(d.date));
+                focus.select(".rate").text(formatCurrency(d.rate));
+
+                div.html(formatTime(d.date) + "<br/>" + d.rate)
+                    .style("left", (d3.event.pageX - 40) + "px")
+                    .style("top", (yScale(d.rate)) + "px");
             }
-            var result = [];
-
-            var firstDay = data[0].date;
-            var lastDay = data[data.length - 1].date;
-            var diff = diffDays(firstDay, lastDay);
-            
-            var numMins = numPionts / 2;
-            if (diff < numMins) {
-                return data;
-            }
-            
-            var period = diff / numMins;
-            console.log("period: " + period);
-
-            var prevInd = 0;
-            var processingPeriod = 0;
-            
-            while (Math.ceil(processingPeriod) < diff) {
-                processingPeriod += period;
-                var ind = Math.ceil(processingPeriod);
-                minMAx = getMinMaxPoints(data.slice(prevInd, ind + 1));
-                if (minMAx.min == result[result.length - 1]) {
-                    console.log("OPA!");
-                    console.log(minMAx.min.date);
-                    
-                    minMAx.min = data[prevInd + Math.round(period / 2)];
-                }
-                result.push(minMAx.min);
-                result.push(minMAx.max);
-                prevInd = ind;
-            }
-            console.log(result.length);
-            return result;
-        }
-
+        };
+ 
         var makeUTCDate = function(incomeDate) {
             var date = new Date(incomeDate);
             date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
@@ -192,12 +182,22 @@ angular.module('app.chartDirective', [])
             restrict: "A",
 
             controller: function($scope, $element, $attrs) {
+
+                $scope.showDropdown = function(elementId) {
+                    var element = document.getElementById(elementId),
+                        event = document.createEvent('MouseEvents');
+                    event.initMouseEvent('mousedown', true, true, window);
+                    $timeout(function() {
+                        element.dispatchEvent(event);
+                    });
+                };
+
                 $scope.listCurrencies = [];
                 $scope.ratesHistory = [];
 
                 $scope.filter = {
                     selectCur: 'USD',
-                    dateFrom: new Date(2016, 0, 3),
+                    dateFrom: new Date(2016, 0, 1),
                     dateTo: dateInBelarus()
                 };
 
@@ -259,6 +259,10 @@ angular.module('app.chartDirective', [])
                 }
 
                 $scope.getListCurrencies();
+
+                angular.element(window).bind('resize orientationchange', function() {
+                    makeChart($scope.ratesHistory, $scope.filter.selectCur);
+                });
             },
             templateUrl: 'templates/coursesChart.html'
         };

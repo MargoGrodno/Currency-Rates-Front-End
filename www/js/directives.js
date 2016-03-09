@@ -39,7 +39,7 @@ angular.module('app.directives', [])
     }
 }])
 
-.directive('dateSelector', function() {
+.directive('dateSelector', ['$timeout', function($timeout) {
 
     function dateInBelarus() {
         var date = new Date();
@@ -50,21 +50,44 @@ angular.module('app.directives', [])
     return {
         restrict: "E",
         scope: {
-            inputDate: '='
+            inputDate: '=',
+            dateFrom: '=',
+            dateTo: '='
         },
-        template: '<ionic-datepicker input-obj="datepickerObjectPopup" >' +
+        template: '<ionic-datepicker input-obj="datepickerObjectPopup" ng-if="!!isShow">' +
             '<button class="button button-light dateBtn">{{datepickerObjectPopup.inputDate | date:datepickerObjectPopup.dateFormat}}</button>' +
             '</ionic-datepicker>',
 
         controller: function($scope, $element, $attrs) {
+            $scope.$watch("dateFrom", function(newValue, oldValue) {
+                $scope.isShow = false;
+                $timeout(function() {
+                    $scope.datepickerObjectPopup.from = newValue;
+                    //$scope.$apply();
+                    $scope.isShow = true;
+                });
+            })
+
+            $scope.$watch("dateTo", function(newValue, oldValue) {
+                $scope.isShow = false;
+                $timeout(function() {
+                    $scope.datepickerObjectPopup.to = newValue;
+                    //$scope.$apply();
+                    $scope.isShow = true;
+                });
+            })
+
+            var dateFrom = $scope.dateFrom || new Date(1995, 6, 1);
+            var dateTo = $scope.dateTo || dateInBelarus();
+
             $scope.datepickerObjectPopup = {
                 titleLabel: $attrs.titleLabel,
                 inputDate: $scope.inputDate,
                 templateType: 'popup',
                 monthList: $scope.monthList,
                 mondayFirst: true,
-                from: new Date(1995, 6, 1),
-                to: dateInBelarus(),
+                from: dateFrom,
+                to: dateTo,
                 callback: function(val) {
                     datePickerCallbackPopup(val);
                 },
@@ -76,10 +99,10 @@ angular.module('app.directives', [])
                     console.log('No date selected');
                 } else {
                     $scope.datepickerObjectPopup.inputDate = val;
-                    $scope.$emit($attrs.dateSelector, val);
+                    $scope.$emit($attrs.changeEvent, val);
                     console.log('Selected date is : ', val)
                 }
             };
         }
     }
-});
+}]);
