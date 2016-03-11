@@ -43,11 +43,9 @@ angular.module('app.ratesController', [])
                     period: $scope.periodProp
                 }
             }).success(function(data) {
-                $scope.$emit("hideLoading", {});
-                $scope.rates = data;
+               $scope.rates = data;
             }).error(function(error) {
-                $scope.$emit("hideLoading", {});
-                $scope.$emit("showSystemMsg", {});
+               $scope.$emit("showSystemMsg", {});
                 console.log(error);
             });
         }

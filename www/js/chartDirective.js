@@ -1,7 +1,7 @@
 angular.module('app.chartDirective', [])
 
-.directive('coursesChart', ['$ionicPopup', '$http', 'serverUrl', 'monthList', '$timeout',
-    function($ionicPopup, $http, serverUrl, monthList, $timeout) {
+.directive('coursesChart', ['$http', 'serverUrl',
+    function($http, serverUrl) {
 
         function makeChart(data, currencyAbb) {
             d3.select("svg").remove();
@@ -183,15 +183,6 @@ angular.module('app.chartDirective', [])
 
             controller: function($scope, $element, $attrs) {
 
-                $scope.showDropdown = function(elementId) {
-                    var element = document.getElementById(elementId),
-                        event = document.createEvent('MouseEvents');
-                    event.initMouseEvent('mousedown', true, true, window);
-                    $timeout(function() {
-                        element.dispatchEvent(event);
-                    });
-                };
-
                 $scope.listCurrencies = [];
                 $scope.ratesHistory = [];
 
@@ -229,10 +220,8 @@ angular.module('app.chartDirective', [])
                             method: "currenciesForGraphics"
                         }
                     }).success(function(data) {
-                        $scope.$emit("hideLoading", {});
                         $scope.listCurrencies = data;
                     }).error(function(error) {
-                        $scope.$emit("hideLoading", {});
                         $scope.$emit("showSystemMsg", {});
                         console.log(error);
                     });
@@ -249,11 +238,9 @@ angular.module('app.chartDirective', [])
                             }
                         })
                         .success(function(response) {
-                            $scope.$emit("hideLoading", {});
                             $scope.ratesHistory = convertDates(response.data);
                             showErrorMsg(response.errorMsg);
                         }).error(function(error) {
-                            $scope.$emit("hideLoading", {});
                             $scope.$emit("showSystemMsg", {});
                         });
                 }

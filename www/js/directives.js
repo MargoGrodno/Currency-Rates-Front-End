@@ -30,11 +30,21 @@ angular.module('app.directives', [])
                     templateUrl: "templates/loading.html"
                 });
             });
-            scope.$on('hideLoading', function(event, data) {
+
+            scope.$watch(function() {
+                return $http.pendingRequests.length;
+            }, function(newValue, oldValue) {
+                if (newValue == 0) {
+                    $ionicLoading.hide();
+                }
+            })
+
+            /*scope.$on('hideLoading', function(event, data) {
                 if ($http.pendingRequests.length == 0) {
                     $ionicLoading.hide();
                 }
-            });
+            })*/
+            ;
         }
     }
 }])

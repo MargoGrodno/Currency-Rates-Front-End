@@ -1,5 +1,16 @@
 <ion-view title="Changes" on-swipe-left="swipeLeft()" on-swipe-right="swipeRight()">
     <ion-content overflow-scroll="true" padding="true" class="has-header">
-        
+
+		<ion-view>         
+			<fancy-select 
+			    header-text="Multiple" 
+			    allow-empty='false'  
+			    text='Choose countries' 
+			    list="listCurrencies" 
+			    multi-select="true"
+			    callback="changeVal">
+			</fancy-select>
+		</ion-view>
+
     </ion-content>
 </ion-view>
